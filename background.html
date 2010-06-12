@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Choosy Chrome</title>
+    <script>
+
+      chrome.browserAction.onClicked.addListener(function(tab) {
+        chrome.tabs.update(tab.id, {"url": "x-choosy://prompt.all" + tab.url});
+      });
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

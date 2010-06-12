@@ -1,0 +1,11 @@
+{
+  "name": "Choosy",
+  "version": "0.1",
+  "description": "Send pages and links to another browser using Choosy",
+  "background_page": "background.html",
+  "browser_action": {
+    "default_icon": "images/icon.png",
+    "tooltip": "Open with Choosy"
+  },
+  "permissions": ["tabs"]
+}
