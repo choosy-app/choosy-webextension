@@ -4,15 +4,22 @@
     <title>Choosy Chrome</title>
     <script>
 
+      var Choosy = {
+        promptAll: function(url, tab) {
+          var choosyURL = "x-choosy://prompt.all/" + escape(url);
+          chrome.tabs.update(tab.id, {"url": choosyURL});
+        }
+      };
+
       chrome.browserAction.onClicked.addListener(function(tab) {
-        chrome.tabs.update(tab.id, {"url": "x-choosy://prompt.all/" + tab.url});
+        Choosy.promptAll(tab.url, tab);
       });
 
       chrome.contextMenus.create({
         title: "Open with Choosy",
         contexts: ["link"],
         onclick: function(info, tab) {
-          chrome.tabs.update(tab.id, {"url": "x-choosy://prompt.all/" + info.linkUrl});
+          Choosy.promptAll(info.linkUrl, tab);
         }
       });
 
