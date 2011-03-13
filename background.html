@@ -8,6 +8,14 @@
         chrome.tabs.update(tab.id, {"url": "x-choosy://prompt.all/" + tab.url});
       });
 
+      chrome.contextMenus.create({
+        title: "Open with Choosy",
+        contexts: ["link"],
+        onclick: function(info, tab) {
+          chrome.tabs.update(tab.id, {"url": "x-choosy://prompt.all/" + info.linkUrl});
+        }
+      });
+
     </script>
   </head>
   <body>
