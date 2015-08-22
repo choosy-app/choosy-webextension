@@ -13,5 +13,5 @@
     "default_icon": "images/icon16.png",
     "tooltip": "Open with Choosy"
   },
-  "permissions": ["tabs", "contextMenus"]
+  "permissions": ["contextMenus"]
 }
