@@ -10,10 +10,16 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   Choosy.promptAll(tab.url);
 });
 
-chrome.contextMenus.create({
-  title: "Open with Choosy",
-  contexts: ["link"],
-  onclick: function(info, tab) {
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
+  if (info.menuItemId === "choosy-menu-item") {
     Choosy.promptAll(info.linkUrl);
   }
+});
+
+chrome.runtime.onInstalled.addListener(function () {
+  chrome.contextMenus.create({
+    id: "choosy-menu-item",
+    title: "Open with Choosy",
+    contexts: ["link"]
+  });
 });
