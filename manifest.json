@@ -13,5 +13,8 @@
   "browser_action": {
     "tooltip": "Open with Choosy"
   },
-  "permissions": ["contextMenus"]
+  "permissions": [
+    "activeTab",
+    "contextMenus"
+  ]
 }
