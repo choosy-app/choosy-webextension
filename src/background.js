@@ -1,3 +1,7 @@
+if (typeof browser === "undefined") {
+  browser = chrome;
+}
+
 var Choosy = {
   promptAll: function(url) {
     var iframe = document.createElement("iframe");
@@ -6,18 +10,18 @@ var Choosy = {
   }
 };
 
-chrome.browserAction.onClicked.addListener(function(tab) {
+browser.browserAction.onClicked.addListener(function(tab) {
   Choosy.promptAll(tab.url);
 });
 
-chrome.contextMenus.onClicked.addListener(function (info, tab) {
+browser.contextMenus.onClicked.addListener(function (info, tab) {
   if (info.menuItemId === "choosy-menu-item") {
     Choosy.promptAll(info.linkUrl);
   }
 });
 
-chrome.runtime.onInstalled.addListener(function () {
-  chrome.contextMenus.create({
+browser.runtime.onInstalled.addListener(function () {
+  browser.contextMenus.create({
     id: "choosy-menu-item",
     title: "Open with Choosy",
     contexts: ["link"]
