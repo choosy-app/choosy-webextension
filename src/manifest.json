@@ -25,5 +25,10 @@
   "permissions": [
     "activeTab",
     "contextMenus"
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "firefox@choosyosx.com"
+    }
+  }
 }
