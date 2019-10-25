@@ -13,7 +13,7 @@
     "persistent": false
   },
   "browser_action": {
-    "tooltip": "Open with Choosy",
+    "default_title": "Open with Choosy",
     "default_icon": {
       "16": "images/icon16.png",
       "19": "images/icon19.png",
