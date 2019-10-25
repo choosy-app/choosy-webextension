@@ -24,7 +24,8 @@
   },
   "permissions": [
     "activeTab",
-    "contextMenus"
+    "contextMenus",
+    "nativeMessaging"
   ],
   "browser_specific_settings": {
     "gecko": {

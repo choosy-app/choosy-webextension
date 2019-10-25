@@ -1,39 +1,33 @@
-var callChoosy;
-
 if (typeof browser === "undefined") {
   // Google Chrome
   browser = chrome;
-  callChoosy = function (url, sourceTab) {
-    var iframe = document.createElement("iframe");
-    iframe.setAttribute("src", url);
-    document.body.appendChild(iframe);
-  };
-} else {
-  // Mozilla Firefox
-  callChoosy = function (url, sourceTab) {
-    browser.tabs.create({
-      "url": url,
-      "openerTabId": sourceTab.id,
-      "active": false
-    }).then(function (tab) {
-      browser.tabs.remove(tab.id);
-    });
-  };
 }
 
 var Choosy = {
-  promptAll: function(url, sourceTab) {
-    callChoosy("x-choosy://prompt.all/" + escape(url), sourceTab);
+  promptAll: function(url) {
+    this.call("prompt.all", url);
+  },
+
+  call: function (method, url) {
+    browser.runtime.sendNativeMessage(
+      "com.choosyosx.choosy.nativemessaging",
+      {"method": method, "url": url},
+      function (response) {
+        if (!response.ok) {
+          console.error(response);
+        }
+      }
+    );
   }
 };
 
 browser.browserAction.onClicked.addListener(function (tab) {
-  Choosy.promptAll(tab.url, tab);
+  Choosy.promptAll(tab.url);
 });
 
-browser.contextMenus.onClicked.addListener(function (info, tab) {
+browser.contextMenus.onClicked.addListener(function (info) {
   if (info.menuItemId === "choosy-menu-item") {
-    Choosy.promptAll(info.linkUrl, tab);
+    Choosy.promptAll(info.linkUrl);
   }
 });
 
