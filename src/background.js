@@ -4,30 +4,50 @@ if (typeof browser === "undefined") {
 }
 
 var Choosy = {
-  promptAll: function(url) {
-    this.call("prompt.all", url);
+  promptAll: function(url, tab) {
+    this.call("prompt.all", url, tab);
   },
 
-  call: function (method, url) {
-    browser.runtime.sendNativeMessage(
-      "com.choosyosx.choosy.nativemessaging",
-      {"method": method, "url": url},
-      function (response) {
-        if (!response.ok) {
-          console.error(response);
+  call: function (method, url, tab) {
+    this.nativeMessagingCall(method, url).catch((error) => {
+      console.error("Native messaging failed: ", error);
+      this.legacyCall(method, url, tab);
+    });
+  },
+
+  nativeMessagingCall: function (method, url) {
+    return new Promise(function (resolve, reject) {
+      browser.runtime.sendNativeMessage(
+        "com.choosyosx.choosy.nativemessaging",
+        {"method": method, "url": url},
+        function (response) {
+          if (!response) {
+            reject(browser.runtime.lastError.message);
+          } else if (response && !response.ok) {
+            reject(response);
+          } else {
+            resolve();
+          }
         }
-      }
+      );
+    });
+  },
+
+  legacyCall: function (method, url, tab) {
+    browser.tabs.update(
+      tab.id,
+      {url: "x-choosy://" + method + "/" + url},
     );
   }
 };
 
 browser.browserAction.onClicked.addListener(function (tab) {
-  Choosy.promptAll(tab.url);
+  Choosy.promptAll(tab.url, tab);
 });
 
-browser.contextMenus.onClicked.addListener(function (info) {
+browser.contextMenus.onClicked.addListener(function (info, tab) {
   if (info.menuItemId === "choosy-menu-item") {
-    Choosy.promptAll(info.linkUrl);
+    Choosy.promptAll(info.linkUrl, tab);
   }
 });
 
