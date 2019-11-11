@@ -1,60 +1,53 @@
-if (typeof browser === "undefined") {
-  // Google Chrome
-  browser = chrome;
-}
+"use strict";
 
-var Choosy = {
-  promptAll: function(url, tab) {
-    this.call("prompt.all", url, tab);
-  },
+class Choosy {
+  promptAll = ({tab, ...request}) => this.call({
+    method: "prompt.all",
+    tab,
+    url: tab.url,
+    ...request,
+  })
 
-  call: function (method, url, tab) {
-    this.nativeMessagingCall(method, url).catch((error) => {
-      console.error("Native messaging failed: ", error);
-      this.legacyCall(method, url, tab);
-    });
-  },
+  call = (request) => this.nativeMessagingCall(request).catch((error) => {
+    console.error("Native messaging failed: ", error);
+    this.legacyCall(request);
+  })
 
-  nativeMessagingCall: function (method, url) {
-    return new Promise(function (resolve, reject) {
-      browser.runtime.sendNativeMessage(
-        "com.choosyosx.choosy.nativemessaging",
-        {"method": method, "url": url},
-        function (response) {
-          if (!response) {
-            reject(browser.runtime.lastError.message);
-          } else if (response && !response.ok) {
-            reject(response);
-          } else {
-            resolve();
-          }
+  nativeMessagingCall = ({method, url}) => new Promise((resolve, reject) => {
+    browser.runtime.sendNativeMessage(
+      "com.choosyosx.choosy.nativemessaging",
+      {method, url},
+      (response) => {
+        if (!response) {
+          reject(browser.runtime.lastError.message);
+        } else if (response && !response.ok) {
+          reject(response);
+        } else {
+          resolve();
         }
-      );
-    });
-  },
-
-  legacyCall: function (method, url, tab) {
-    browser.tabs.update(
-      tab.id,
-      {url: "x-choosy://" + method + "/" + url},
+      }
     );
-  }
+  })
+
+  legacyCall = ({method, url, tab}) => browser.tabs.update(
+    tab.id,
+    {url: "x-choosy://" + method + "/" + url},
+  )
 };
 
-browser.browserAction.onClicked.addListener(function (tab) {
-  Choosy.promptAll(tab.url, tab);
-});
+const choosy = new Choosy();
+const browser = window.browser || window.chrome;
 
-browser.contextMenus.onClicked.addListener(function (info, tab) {
+browser.browserAction.onClicked.addListener((tab) => choosy.promptAll({tab}));
+
+browser.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "choosy-menu-item") {
-    Choosy.promptAll(info.linkUrl, tab);
+    choosy.promptAll({url: info.linkUrl, tab});
   }
 });
 
-browser.runtime.onInstalled.addListener(function () {
-  browser.contextMenus.create({
-    id: "choosy-menu-item",
-    title: "Open with Choosy",
-    contexts: ["link"]
-  });
-});
+browser.runtime.onInstalled.addListener(() => browser.contextMenus.create({
+  id: "choosy-menu-item",
+  title: "Open with Choosy",
+  contexts: ["link"]
+}));
