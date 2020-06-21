@@ -6,4 +6,4 @@ SOURCES = $(wildcard src/*)
 release: pkg/choosy-$(VERSION).zip
 
 pkg/choosy-$(VERSION).zip: $(SOURCES)
-	cd src && zip -r ../$@ . -x \*.DS_Store
+	cd src && zip -r ../$@ . -x \*.DS_Store -x \*.swp -x \*.swo
