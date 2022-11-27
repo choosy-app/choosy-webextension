@@ -18,20 +18,24 @@ class Choosy {
   }
 
   nativeMessagingCall({method, url}) {
-    new Promise((resolve, reject) => {
-      host.runtime.sendNativeMessage(
-        "com.choosyosx.choosy.nativemessaging",
-        {method, url},
-        (response) => {
-          if (!response) {
-            reject(host.runtime.lastError.message);
-          } else if (response && !response.ok) {
-            reject(response);
-          } else {
-            resolve();
+    return new Promise((resolve, reject) => {
+      try {
+        host.runtime.sendNativeMessage(
+          "com.choosyosx.choosy.nativemessaging",
+          {method, url},
+          (response) => {
+            if (!response) {
+              reject(host.runtime.lastError.message);
+            } else if (response && !response.ok) {
+              reject(response);
+            } else {
+              resolve();
+            }
           }
-        }
-      );
+        );
+      } catch(e) {
+        reject(e);
+      }
     });
   }
 
