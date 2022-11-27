@@ -19,12 +19,12 @@ class Choosy {
 
   nativeMessagingCall({method, url}) {
     new Promise((resolve, reject) => {
-      browser.runtime.sendNativeMessage(
+      host.runtime.sendNativeMessage(
         "com.choosyosx.choosy.nativemessaging",
         {method, url},
         (response) => {
           if (!response) {
-            reject(browser.runtime.lastError.message);
+            reject(host.runtime.lastError.message);
           } else if (response && !response.ok) {
             reject(response);
           } else {
@@ -36,7 +36,7 @@ class Choosy {
   }
 
   legacyCall({method, url, tab}) {
-    browser.tabs.update(
+    host.tabs.update(
       tab.id,
       {url: "x-choosy://" + method + "/" + url},
     );
@@ -44,17 +44,17 @@ class Choosy {
 };
 
 const choosy = new Choosy();
-const browser = window.browser || window.chrome;
+const host = globalThis.browser || globalThis.chrome;
 
-browser.browserAction.onClicked.addListener((tab) => choosy.promptAll({tab}));
+host.action.onClicked.addListener((tab) => choosy.promptAll({tab}));
 
-browser.contextMenus.onClicked.addListener((info, tab) => {
+host.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "choosy-menu-item") {
     choosy.promptAll({url: info.linkUrl, tab});
   }
 });
 
-browser.runtime.onInstalled.addListener(() => browser.contextMenus.create({
+host.runtime.onInstalled.addListener(() => host.contextMenus.create({
   id: "choosy-menu-item",
   title: "Open with Choosy",
   contexts: ["link"]

@@ -1,6 +1,6 @@
 {
   "name": "Choosy",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "2.0.1",
   "description": "Send pages and links to another browser using Choosy (macOS only).",
   "icons": {
@@ -9,10 +9,9 @@
     "128": "images/icon128.png"
   },
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
-  "browser_action": {
+  "action": {
     "default_title": "Open with Choosy",
     "default_icon": {
       "16": "images/icon16.png",
